@@ -272,19 +272,34 @@ class AsanaAPI(object):
         """
         return self._asana('projects/%d' % project_id)
 
-    def get_project_tasks(self, project_id, include_archived=False):
-        """Get project tasks
+    def get_project_tasks(self, project_id, include_archived=False,
+        completed_since=None, opt_fields=[]):
+      """Get project tasks
 
-        :param project_id: id# of project
-        :param include_archived: true to include archived tasks
-        """
-        # Sanitise our include_archived variable
-        if include_archived:
-            include_archived = "true"
-        else:
-            include_archived = "false"
-        return self._asana('projects/%d/tasks?include_archived=%s' % (
-            project_id, include_archived))
+      :param project_id: id# of project
+      :param include_archived: true to include archived tasks
+      :param completed_since: Only return tasks that are either incomplete,
+      or completed since the given time. You can also specify 'now' to
+      represent the current time.
+      :param opt_fields: provide an optional array of fields, only these task
+      fields are fetched
+      """
+
+      # Sanitise our include_archived variable
+      target = 'projects/%d/tasks?' % (project_id);
+      if include_archived:
+        target += "include_archived=true"
+      else:
+        target += "include_archived=false"
+
+      if completed_since is not None:
+        target += "&completed_since=%s" % (completed_since);
+
+      fields = ",".join(opt_fields)
+      if fields != "":
+        target += "&opt_fields=%s" % (fields);
+
+      return self._asana(target)
 
     def list_stories(self, task_id):
         """List stories for task
