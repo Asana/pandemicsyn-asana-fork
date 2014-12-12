@@ -58,7 +58,7 @@ class AsanaAPI(object):
         else:
             raise AsanaException(
                 "Received bad status code: {code} with text: {text}".format(
-                  code=code, text=text))
+                  code=r.status_code, text=r.text))
 
 
     def _handle_rate_limit(self, r):
